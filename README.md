@@ -84,15 +84,15 @@ ii. Nenhuma conta pode ter o mesmo id ou numero de outra conta.
 
 a. Você concorda que o banco faz o cadastro de duas entidades e ainda faz regras de negócios?
 
-R= 
+R= Não. Ao realizar todas tarefas, a classe Banco concentra muita responsabilidade. Em um cenário ideal, as regras de negócio e as operações de cadastro deveriam ser postas em outras classes. Com isso a classe Banco focaria em coordenar as interações entre as entidades clientes e contas.
 
 b. Não seria adequado o banco ter uma class CadastroDeClientes e CadastroDeContas e algumas regras de validação serem feitas no banco e deixar os métodos de consulta e inclusão os mais simples possíveis?
 
-R= 
+R= Sim. Essa separação deixaria o código mais organizado, além de melhorar a manutenção, permitir mudanças e adição de novas funcionalidades sem impactar todo o código.
 
 c. O método associar cliente a uma conta deveria estar em que classe? Banco, CadastroDeContas ou CadastroDeClientes?
 
-R= 
+R= Classe Banco,  pois a classe age como mediadora, organizando as interações entre os dois.
 
 
 # Parte 02
