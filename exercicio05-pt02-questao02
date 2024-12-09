@@ -1,0 +1,73 @@
+class Postagem {
+    id: number;
+    texto: string;
+    quantidadeCurtidas: number;
+
+    constructor(id: number, texto: string) {
+        this.id = id;
+        this.texto = texto;
+        this.quantidadeCurtidas = 0;
+    }
+
+    curtir() {
+        this.quantidadeCurtidas++;
+    }
+
+    toString(): string {
+        return `${this.texto} - Curtidas: ${this.quantidadeCurtidas}`;
+    }
+}
+
+class Microblog {
+    postagens: Postagem[];
+
+    constructor() {
+        this.postagens = [];
+    }
+
+    incluirPostagem(postagem: Postagem) {
+        this.postagens.push(postagem);
+    }
+
+    excluirPostagem(id: number) {
+        this.postagens = this.postagens.filter(postagem => postagem.id !== id);
+    }
+
+    postagemMaisCurtida(): Postagem | null {
+        if (this.postagens.length === 0) return null;
+        return this.postagens.reduce((maisCurtida, postagemAtual) => 
+            postagemAtual.quantidadeCurtidas > maisCurtida.quantidadeCurtidas ? postagemAtual : maisCurtida
+        );
+    }
+
+    curtir(id: number) {
+        const postagem = this.postagens.find(postagem => postagem.id === id);
+        if (postagem) postagem.curtir();
+    }
+
+    toString(): string {
+        return this.postagens.map(postagem => postagem.toString()).join('\n');
+    }
+}
+
+// EXEMPLO DE USO
+const microblog = new Microblog();
+
+const postagem1 = new Postagem(1, "Avanços da Inteligência no setor industrial");
+const postagem2 = new Postagem(2, "Aplicações de TI na área da saúde");
+const postagem3 = new Postagem(3, "Como fazer uma casa inteligente");
+
+microblog.incluirPostagem(postagem1);
+microblog.incluirPostagem(postagem2);
+microblog.incluirPostagem(postagem3);
+
+microblog.curtir(1);
+microblog.curtir(1);
+microblog.curtir(2);
+
+console.log(microblog.toString());
+console.log("Postagem mais curtida:", microblog.postagemMaisCurtida()?.toString());
+
+microblog.excluirPostagem(2);
+console.log("Após excluir postagem 2:");
+console.log(microblog.toString());
