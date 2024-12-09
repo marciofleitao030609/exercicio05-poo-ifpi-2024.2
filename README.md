@@ -1,10 +1,10 @@
 # RESOLUÇÃO EXERCÍCIO 05 (COMPLETO)
 
-R= A resolução das questões (Questões 01 a 05 da parte 01, questão 01 da parte 02) referente ao banco estão no código: https://github.com/marciofleitao030609/exercicio05-poo-ifpi-2024.2/blob/main/questao-05-banco
+R= A resolução das questões (Questões 01 a 05 da parte 01, questão 01 da parte 02) referente ao banco estão no código: https://github.com/marciofleitao030609/exercicio05-poo-ifpi-2024.2/blob/main/exercicio05-pt01
 
-A resolução da questão 01 da parte 02 está no código:
+A resolução da questão 01 da parte 02 está no código: https://github.com/marciofleitao030609/exercicio05-poo-ifpi-2024.2/blob/main/exercicio05-pt02-questao01
 
-A resolução da questão 02 da parte 02 está no código: 
+A resolução da questão 02 da parte 02 está no código: https://github.com/marciofleitao030609/exercicio05-poo-ifpi-2024.2/blob/main/exercicio05-pt02-questao02
 
 A resolução da questão 03 da parte 02 está no código: 
 
@@ -97,6 +97,7 @@ R= Classe Banco,  pois a classe age como mediadora, organizando as interações 
 
 # Parte 02
 1. Atualize a implementação da classe Banco com os métodos apresentados em sala de aula:
+
 a. Consultar por índice, excluir, atualizar, sacar, depositar e transferir apresentadas em sala. Nota: o transferir deve ter como parâmetros os dois números de conta, não os objetos e um valor a ser transferido conforme slide "Esqueleto" de um cadastro.
 
 b. Crie um método transferir que recebe um array de contas destino e realiza transferências para cada uma delas;
@@ -105,7 +106,9 @@ c. Crie 3 métodos: um que retorne a quantidade de contas, outro que retorne o t
 
 2. Crie uma implementação que simule um migroblog:
 * Crie uma classe Postagem e nela:
-   a. Crie os atributos:
+
+  a. Crie os atributos:
+
       1. id do tipo number, representando o identificador da postagem;
   
       2. texto do tipo string, representando um texto da postagem;
@@ -117,7 +120,8 @@ b. Crie um método chamado curtir que incrementa a quantidade curtidas;
 c. Crie um método chamado toString que retorna a concatenação da postagem com a quantidade de curtidas;
 
 * Crie uma classe Microblog e nela:
-   a. Crie um array de classes Postagem;
+
+    a. Crie um array de classes Postagem;
   
    b. Crie um método que inclua uma postagem passada como parâmetro no array de postagens;
   
