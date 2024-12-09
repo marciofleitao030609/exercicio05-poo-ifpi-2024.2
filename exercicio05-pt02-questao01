@@ -1,0 +1,345 @@
+class Conta {
+    id: number;
+    numero: string;
+    saldo: number;
+    cliente: Cliente | null;
+
+    constructor(id: number, numero: string, saldo: number) {
+        this.id = id;
+        this.numero = numero;
+        this.saldo = saldo;
+        this.cliente = null;
+    }
+
+    sacar(valor: number): void {
+        if (valor > this.saldo) {
+            console.log("Saldo insuficiente!");
+            return;
+        }
+        this.saldo -= valor;
+    }
+
+    depositar(valor: number): void {
+        this.saldo += valor;
+    }
+
+    consultarSaldo(): number {
+        return this.saldo;
+    }
+
+    transferir(contaDestino: Conta, valor: number): void {
+        if (valor > this.saldo) {
+            console.log("Saldo insuficiente para transferência!");
+            return;
+        }
+        this.sacar(valor);
+        contaDestino.depositar(valor);
+    }
+}
+
+class Cliente {
+    id: number;
+    nome: string;
+    cpf: string;
+    dataNascimento: Date;
+    contas: Conta[];
+
+    constructor(id: number, nome: string, cpf: string, dataNascimento: Date) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.dataNascimento = dataNascimento;
+        this.contas = [];
+    }
+
+    adicionarConta(conta: Conta): void {
+        if (this.contas.find(c => c.numero === conta.numero)) {
+            console.log("Esta conta já está associada a este cliente!");
+            return;
+        }
+        this.contas.push(conta);
+        conta.cliente = this;
+    }
+
+    listarContas(): void {
+        console.log(`Contas do(a) cliente ${this.nome}:`);
+        for (let conta of this.contas) {
+            console.log(`- Conta número: ${conta.numero}, Saldo: ${conta.saldo}`);
+        }
+    }
+
+    totalizarSaldo(): number {
+        return this.contas.reduce((total, conta) => total + conta.saldo, 0);
+    }
+}
+
+class Banco {
+    contas: Conta[] = [];
+    clientes: Cliente[] = [];
+
+    constructor() {
+        this.contas = [];
+        this.clientes = [];
+    }
+
+    inserir(c: Conta): void {
+        this.contas.push(c);
+    }
+
+    consultar(numero: string): Conta | null {
+        return this.contas.find(conta => conta.numero === numero) || null;
+    }
+
+    consultarIndice(numero: string): number {
+        let indice: number = -1;
+        for (let i = 0; i < this.contas.length; i++) {
+            if (this.contas[i].numero === numero) {
+                indice = i;
+                break;
+            }
+        }
+        return indice;
+    }
+
+    excluir(numero: string): void {
+        const indice = this.consultarIndice(numero);
+        if (indice !== -1) {
+            this.contas.splice(indice, 1);
+            console.log(`Conta número ${numero} excluída com sucesso!`);
+        } else {
+            console.log("Conta não encontrada!");
+        }
+    }
+
+    alterar(c: Conta): void {
+        const indice = this.consultarIndice(c.numero);
+        if (indice !== -1) {
+            this.contas[indice] = c;
+            console.log(`Conta número ${c.numero} atualizada com sucesso!`);
+        } else {
+            console.log("Conta não encontrada para atualização!");
+        }
+    }
+
+    depositar(numero: string, valor: number): void {
+        const conta = this.consultar(numero);
+        if (conta) {
+            conta.depositar(valor);
+            console.log(`Depósito de R$${valor} realizado na conta número ${numero}`);
+        } else {
+            console.log("Conta não encontrada!");
+        }
+    }
+
+    sacar(numero: string, valor: number): void {
+        const conta = this.consultar(numero);
+        if (conta) {
+            conta.sacar(valor);
+            console.log(`Saque de R$${valor} realizado na conta número ${numero}`);
+        } else {
+            console.log("Conta não encontrada!");
+        }
+    }
+
+    consultarSaldo(numero: string): number {
+        const conta = this.consultar(numero);
+        if (conta) {
+            return conta.consultarSaldo();
+        } else {
+            console.log("Conta não encontrada!");
+            return 0;
+        }
+    }
+
+    transferir(numeroCredito: string, numeroDebito: string, valor: number): void {
+        const contaCredito = this.consultar(numeroCredito);
+        const contaDebito = this.consultar(numeroDebito);
+
+        if (!contaCredito || !contaDebito) {
+            console.log("Uma das contas não foi encontrada!");
+            return;
+        }
+
+        contaDebito.transferir(contaCredito, valor);
+        console.log(`Transferência de R$${valor} realizada da conta ${numeroDebito} para a conta ${numeroCredito}`);
+    }
+
+    transferirParaVarios(numeroDebito: string, contasDestino: Conta[], valor: number): void {
+        const contaDebito = this.consultar(numeroDebito);
+        if (!contaDebito) {
+            console.log("Conta de débito não encontrada!");
+            return;
+        }
+
+        contasDestino.forEach(contaDestino => {
+            contaDebito.transferir(contaDestino, valor);
+            console.log(`Transferência de R$${valor} realizada da conta ${numeroDebito} para a conta ${contaDestino.numero}`);
+        });
+    }
+
+    quantidadeContas(): number {
+        return this.contas.length;
+    }
+
+    totalDepositos(): number {
+        return this.contas.reduce((total, conta) => total + conta.saldo, 0);
+    }
+
+    mediaSaldos(): number {
+        const total = this.totalDepositos();
+        const quantidade = this.quantidadeContas();
+        return quantidade === 0 ? 0 : total / quantidade;
+    }
+
+    inserirCliente(cliente: Cliente): void {
+        if (this.clientes.find(c => c.id === cliente.id || c.cpf === cliente.cpf)) {
+            console.log("Cliente com o mesmo ID ou CPF já existe!");
+            return;
+        }
+        this.clientes.push(cliente);
+    }
+
+    consultarCliente(cpf: string): Cliente | null {
+        return this.clientes.find(cliente => cliente.cpf === cpf) || null;
+    }
+
+    associarContaCliente(numeroConta: string, cpfCliente: string): void {
+        const cliente = this.consultarCliente(cpfCliente);
+        const conta = this.consultar(numeroConta);
+
+        if (!cliente) {
+            console.log("Cliente não encontrado!");
+            return;
+        }
+        if (!conta) {
+            console.log("Conta não encontrada!");
+            return;
+        }
+        if (conta.cliente) {
+            console.log("Esta conta já está associada a outro cliente!");
+            return;
+        }
+        cliente.adicionarConta(conta);
+    }
+
+    listarContasCliente(cpf: string): Conta[] {
+        const cliente = this.consultarCliente(cpf);
+        if (!cliente) {
+            console.log("Cliente não encontrado!");
+            return [];
+        }
+        return cliente.contas;
+    }
+
+    totalizarSaldoCliente(cpf: string): any {
+        const cliente = this.consultarCliente(cpf);
+        if (!cliente) {
+            console.log("Cliente não encontrado!");
+            return 0;
+        }
+        console.log("Informações do(a) cliente:");
+        console.log(`Nome: ${cliente.nome}`);
+        console.log(`CPF: ${cliente.cpf}`);
+        cliente.listarContas();
+        console.log(`Saldo total: ${cliente.totalizarSaldo()}`);
+    }
+}
+
+
+// EXEMPLOS DE USO
+let banco = new Banco();
+
+// CRIAR CLIENTE
+let cliente1 = new Cliente(1, "Orleanny Santana", "666.666.321-00", new Date(1990, 10, 20));
+let cliente2 = new Cliente(2, "Celeste Ferreira", "333.333.123-00", new Date(1985, 10, 15));
+let cliente3 = new Cliente(3, "Tiago Biazin", "999.999.213-00", new Date(1999, 11, 30));
+let cliente4 = new Cliente(4, "Adriana Vieira", "444.444.543-00", new Date(1995, 9, 8));
+let cliente5 = new Cliente(5, "Carlos Silva", "555.555.345-00", new Date(1992, 2, 25));
+banco.inserirCliente(cliente1);
+banco.inserirCliente(cliente2);
+banco.inserirCliente(cliente3);
+banco.inserirCliente(cliente4);
+banco.inserirCliente(cliente5);
+
+// CRIAR CONTA
+let conta1 = new Conta(101, "111", 1500);
+let conta2 = new Conta(102, "222", 900);
+let conta3 = new Conta(103, "333", 3000);
+let conta4 = new Conta(104, "444", 2000);
+let conta5 = new Conta(105, "555", 1200);
+let conta6 = new Conta(106, "666", 4500);
+banco.inserir(conta1);
+banco.inserir(conta2);
+banco.inserir(conta3);
+banco.inserir(conta4);
+banco.inserir(conta5);
+banco.inserir(conta6);
+
+// ASSOCIAR CONTA
+banco.associarContaCliente("111", "666.666.321-00");
+banco.associarContaCliente("222", "333.333.123-00");
+banco.associarContaCliente("333", "999.999.213-00");
+banco.associarContaCliente("444", "444.444.543-00");
+banco.associarContaCliente("555", "555.555.345-00");
+banco.associarContaCliente("666", "666.666.321-00");
+
+// CONSULTAR SALDO
+let saldoConta1 = banco.consultarSaldo("111");
+console.log(`Saldo da conta 111: R$${saldoConta1}`);
+console.log("____________________________________________________________________________")
+
+// DEPOSITAR
+banco.depositar("111", 500);
+console.log(`Novo saldo da conta 111: R$${banco.consultarSaldo("111")}`);
+console.log("____________________________________________________________________________")
+
+
+// SACAR
+banco.sacar("222", 200);
+console.log(`Novo saldo da conta 222 após saque: R$${banco.consultarSaldo("222")}`); 
+console.log("____________________________________________________________________________")
+
+
+// REALIZAR TRANSFERÊNCIA 
+banco.transferir("333", "111", 300);
+console.log(`Saldo da conta 333 após transferência: R$${banco.consultarSaldo("333")}`); 
+console.log(`Saldo da conta 111 após transferência: R$${banco.consultarSaldo("111")}`);
+console.log("____________________________________________________________________________")
+
+
+// REALIZAR TRANSFERÊNCIA PARA VÁRIAS CONTAS
+banco.transferirParaVarios("555", [conta4, conta5], 100); 
+console.log(`Saldo da conta 444 após transferência: R$${banco.consultarSaldo("444")}`);
+console.log(`Saldo da conta 555 após transferência: R$${banco.consultarSaldo("555")}`);
+console.log("____________________________________________________________________________")
+
+
+// EXCLUIR CONTA
+banco.excluir("444");
+console.log(`Conta 444 excluída. Tentando consultar saldo novamente: R$${banco.consultarSaldo("444")}`); 
+console.log("____________________________________________________________________________")
+
+
+// ALTERAR CONTA
+let contaAtualizada = new Conta(105, "555", 1500);
+banco.alterar(contaAtualizada);
+console.log(`Saldo da conta 555 após atualização: R$${banco.consultarSaldo("555")}`);
+console.log("____________________________________________________________________________")
+
+
+// CONSULTAR QUANTIDADE DE CONTAS
+let quantidadeContas = banco.quantidadeContas();
+console.log(`Quantidade de contas no banco: ${quantidadeContas}`);
+console.log("____________________________________________________________________________")
+
+
+// CONSULTAR TOTAL DEPOSITADOS
+let totalDepositos = banco.totalDepositos();
+console.log(`Total de dinheiro depositado em todas as contas: R$${totalDepositos}`);
+console.log("____________________________________________________________________________")
+
+
+// CONSULTAR A MÉDIA DO SALDO DAS CONTAS
+let mediaSaldos = banco.mediaSaldos();
+console.log(`Média do saldo das contas: R$${mediaSaldos}`);
+
